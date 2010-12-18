@@ -1,0 +1,13 @@
+This is a plugin that shows you everything you have added to a file going from the last commit in git.
+
+The idea and the vim highlights/signs come from the
+https://github.com/garybernhardt/pycomplexity/ project by Gary Bernhardt, so
+much thanks to him.
+
+This is a huge hack and I have only tested a couple of situations, it's more of a prototype which I want to build upon.
+
+Things to do:
+
+* Use something else then git-blame and some nasty grepping and cutting to get the changes line-numbers.
+* Make sure it works on files wherever they are, now only works on the directory from which vim was opened.
+
