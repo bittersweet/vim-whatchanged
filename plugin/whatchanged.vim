@@ -27,27 +27,50 @@ endfunction
 
 " Remove all signs
 function! s:RemoveSigns(current_buffer)
-  :exe ":sign unplace " . a:current_buffer
+ruby << EOF
+  VIM::command('redir => s:complexity_sign_list')
+  VIM::command("silent sign place buffer=#{current_buffer}")
+  VIM::command('redir END')
+
+  sign_list = VIM::evaluate('s:complexity_sign_list')
+  signs = sign_list.strip.split("\n")
+  signs = signs.select{|s| s.include?("=")}
+
+  # will be an array with linenumbers that have signs, not used at the moment
+  # but can be usefull in the future
+  numbers = []
+  signs.each do |sign|
+    # get start of next line so we know when to stop
+    id = sign.match(/id/).begin(0)
+
+    # filter out all non-digits
+    numbers << sign[0...id].gsub(/\D/, "").to_i
+  end
+
+  # loop through the buffer and remove every sign
+  numbers.size.times do |i|
+    VIM::command("sign unplace 2 buffer=#{current_buffer}")
+  end
+EOF
 endfunction
 
 " Show changes in current file
 function! s:ShowChanges()
 ruby << EOF
-
   current_buffer = VIM::Buffer.current.number
 
   VIM::command("call s:RemoveSigns(#{current_buffer})")
 
   current_file = VIM::evaluate('expand("%:p")')
-  # Currently only works in the directory where vim was started
   lines = %x[git blame #{current_file} | grep "Not Committed" | cut -c 55-56]
 
-  lines.split("\n").each do |line|
+  # filter out non-digits because files without many lines would output 5) for
+  # example instead of 5
+  # The matching pattern will need to be refactored.
+  lines.split("\n").collect{|l| l.gsub(/\D/, "")}.each do |line|
     VIM::command("call s:AddSign(#{line}, #{current_buffer})")
   end
 EOF
 endfunction
 
 command UpdateGitStatus :call <SID>ShowChanges()
-" command RemoveAllSigns :call <SID>RemoveSigns()
-nmap <silent> <Leader>k :UpdateGitStatus<CR>
