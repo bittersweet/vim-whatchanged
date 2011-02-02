@@ -22,6 +22,9 @@ sign define high_complexity text=XX texthl=high_complexity
 
 " Place signs
 function! s:AddSign(line, current_buffer)
+  hi low_complexity guifg=#004400 guibg=#004400
+  hi medium_complexity guifg=#bbbb00 guibg=#bbbb00
+  hi high_complexity guifg=#ff2222 guibg=#ff2222
   :exe ":silent sign place 2 line=" . a:line . " name=medium_complexity buffer=" . a:current_buffer
 endfunction
 
