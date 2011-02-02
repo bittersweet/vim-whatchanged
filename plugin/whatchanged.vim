@@ -65,7 +65,7 @@ ruby << EOF
   VIM::command("call s:RemoveSigns(#{current_buffer})")
 
   current_file = VIM::evaluate('expand("%:p")')
-  lines = %x[git blame #{current_file} | grep "Not Committed" | cut -c 55-56]
+  lines = %x[git blame #{current_file} | grep "Not Committed" | cut -c 55-57]
 
   # filter out non-digits because files without many lines would output 5) for
   # example instead of 5
